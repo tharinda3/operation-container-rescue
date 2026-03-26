@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+    depends_on:
+      - api
+
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    # BUG: Missing network attachment!
+    environment:
+      - DB_HOST=database
+    depends_on:
+      - database
+
+  database:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=myapp
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:

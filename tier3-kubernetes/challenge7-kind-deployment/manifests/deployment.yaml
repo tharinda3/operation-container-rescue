@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rescue-app
+  labels:
+    app: rescue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rescue
+  template:
+    metadata:
+      labels:
+        app: rescue
+    spec:
+      containers:
+      - name: rescue-app
+        image: rescue-app:v1
+        imagePullPolicy: Sometimes  # BUG: Invalid policy!
+        ports:
+        - containerPort: 3000  # BUG: Wrong port!
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"

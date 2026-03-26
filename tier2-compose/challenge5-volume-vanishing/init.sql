@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS flags (
+    value VARCHAR(100) PRIMARY KEY
+);

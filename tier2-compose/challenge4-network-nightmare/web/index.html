@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Network Test</title></head>
+<body>
+<h1>Web Frontend</h1>
+<p>Checking API connection...</p>
+<div id="result"></div>
+<script>
+fetch('/api/health')
+  .then(r => r.json())
+  .then(d => document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(d, null, 2) + '</pre>')
+  .catch(e => document.getElementById('result').innerHTML = 'ERROR: ' + e);
+</script>
+</body>
+</html>

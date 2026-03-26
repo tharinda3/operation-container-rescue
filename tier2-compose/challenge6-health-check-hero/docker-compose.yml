@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=appdb
+    # BUG: No health check! App starts before DB is ready!
+    
+  app:
+    build: ./app
+    ports:
+      - "8080:5000"
+    environment:
+      - DATABASE_URL=postgres://postgres:secret@db:5432/appdb
+    depends_on:
+      - db
+    # BUG: depends_on doesn't wait for healthy, just started!

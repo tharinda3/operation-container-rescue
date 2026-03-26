@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exposure-app
+  labels:
+    app: exposure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exposure
+  template:
+    metadata:
+      labels:
+        app: exposure
+    spec:
+      containers:
+      - name: exposure-app
+        image: exposure-app:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
