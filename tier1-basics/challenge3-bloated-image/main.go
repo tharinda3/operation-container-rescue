@@ -8,7 +8,7 @@ import (
 
 func main() {
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        flagBytes, _ := base64.StdEncoding.DecodeString("RkxBR3tNVUxUMV9TVDRNM19OMU5KNH0=")
+        flagBytes, _ := base64.StdEncoding.DecodeString("RkxBR3tNVUxUMV9TVDRHM19OMU5KNH0=")
         fmt.Fprintf(w, "Slim and trim! %s", string(flagBytes))
     })
 

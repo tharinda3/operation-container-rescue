@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    flag = base64.b64decode("RkxBR3tET0NLM1JfQlUxTERfTTRTVFJ9").decode()
+    flag = base64.b64decode("RkxBR3tET0NLM1JfQlUxTERfTTRTVDNSfQ==").decode()
     return f"Container rescued! {flag}"
 
 if __name__ == '__main__':
