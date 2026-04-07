@@ -1,10 +1,10 @@
 import os
+import base64
 from flask import Flask, jsonify
 import psycopg2
 
 app = Flask(__name__)
 
-# This will fail if DB isn't ready!
 def init_db():
     conn = psycopg2.connect(os.environ['DATABASE_URL'])
     cur = conn.cursor()
@@ -14,14 +14,15 @@ def init_db():
 
 @app.route('/health')
 def health():
+    flag = base64.b64decode("RkxBR3tIMzRMVEhZX1NUNFJUVVB9").decode()
     return jsonify({
         "status": "healthy",
         "message": "App started successfully with DB ready!",
-        "flag": "FLAG{H34LTHY_ST4RTUP}"
+        "flag": flag
     })
 
 if __name__ == '__main__':
     print("Connecting to database...")
-    init_db()  # This crashes if DB not ready
+    init_db()
     print("Database connected!")
     app.run(host='0.0.0.0', port=5000)
