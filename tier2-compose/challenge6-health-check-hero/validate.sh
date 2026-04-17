@@ -23,9 +23,13 @@ if docker compose ps 2>/dev/null | grep "app" | grep -q "Up"; then
         echo "✅ App started successfully after DB was healthy!"
         echo ""
         echo "🎉 SUCCESS! Your flag:"
-        echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+        FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+        echo "$FLAG"
         echo ""
         echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        curl -sf -X POST http://localhost:9000/api/complete \
+          -H "Content-Type: application/json" \
+          -d '{"challenge":"6","flag":"'"$FLAG"'"}' 2>/dev/null || true
     else
         echo "❌ App running but not responding correctly"
     fi

@@ -1,18 +1,18 @@
-# 🟡 Challenge 5: Volume Vanishing Act
+# Challenge 5: Volume Vanishing Act
 
 **Points: 20**
 
 ## Situation
 
-The database keeps losing all its data whenever the containers restart! The flag is stored in the database, but every time you run `docker compose down && docker compose up`, it's gone. Implement proper volume persistence.
+The database keeps losing all its data whenever the containers restart. The flag is stored in the database, but every time you run `docker compose down` followed by `docker compose up`, it is gone. Your mission: implement proper volume persistence.
 
 ## Your Task
 
 1. Run the stack and insert the test data
 2. Run `docker compose down` then `docker compose up`
-3. Notice the data is gone!
+3. Notice the data is gone
 4. Fix the docker-compose.yml to persist the database
-5. Verify data survives restarts
+5. Verify data survives a restart
 6. Run the validation script to capture your flag
 
 ## Commands You'll Need
@@ -24,7 +24,7 @@ docker compose up -d
 # Insert test data
 docker compose exec db psql -U postgres -d flagdb -c "INSERT INTO flags VALUES ('FLAG{PERS1ST3NT_D4T4}');"
 
-# Restart (data will be lost without fix!)
+# Restart (data will be lost without fix)
 docker compose down
 docker compose up -d
 
@@ -44,7 +44,7 @@ Containers are ephemeral. Volumes are not.
 
 <details>
 <summary>Hint 2 (medium)</summary>
-PostgreSQL stores data in /var/lib/postgresql/data
+PostgreSQL stores its data in /var/lib/postgresql/data.
 </details>
 
 <details>

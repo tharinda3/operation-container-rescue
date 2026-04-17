@@ -1,17 +1,17 @@
-# 🟡 Challenge 6: Health Check Hero
+# Challenge 6: Health Check Hero
 
 **Points: 20**
 
 ## Situation
 
-Services start in the wrong order causing cascading failures. The app crashes because the database isn't ready when it tries to connect. Add health checks and proper startup dependencies.
+Services are starting in the wrong order, causing cascading failures. The app crashes because the database is not ready when it tries to connect. Your mission: add health checks and proper startup dependencies so everything comes up cleanly.
 
 ## Your Task
 
 1. Run `docker compose up` and watch the app fail
 2. Add a health check to the database service
-3. Configure the app to wait for the database to be healthy
-4. Verify clean startup with no errors
+3. Configure the app to wait for the database to be healthy before starting
+4. Verify there are no errors on startup
 5. Run the validation script to capture your flag
 
 ## Commands You'll Need
@@ -48,5 +48,5 @@ PostgreSQL can be health-checked with: pg_isready -U postgres
 
 <details>
 <summary>Hint 3 (spicy)</summary>
-Add healthcheck to db service, then use depends_on with condition: service_healthy in the app service.
+Add a healthcheck to the db service, then set depends_on with condition: service_healthy in the app service.
 </details>

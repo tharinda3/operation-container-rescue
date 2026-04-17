@@ -3,7 +3,7 @@ echo "🔍 Validating Challenge 4: Network Nightmare"
 echo ""
 
 # Check if compose stack is running
-if docker compose ps 2>/dev/null | grep -q "running"; then
+if docker compose ps 2>/dev/null | grep -q "Up"; then
     echo "✅ Compose stack is running"
     echo ""
     echo "🔗 Testing web -> api connectivity..."
@@ -13,9 +13,13 @@ if docker compose ps 2>/dev/null | grep -q "running"; then
     if echo "$RESPONSE" | grep -q "FLAG{"; then
         echo ""
         echo "🎉 SUCCESS! All services communicating! Your flag:"
-        echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+        FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+        echo "$FLAG"
         echo ""
         echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        curl -sf -X POST http://localhost:9000/api/complete \
+          -H "Content-Type: application/json" \
+          -d '{"challenge":"4","flag":"'"$FLAG"'"}' 2>/dev/null || true
     else
         echo "❌ Web can't reach API. Check your network configuration."
         echo "   Response: $RESPONSE"

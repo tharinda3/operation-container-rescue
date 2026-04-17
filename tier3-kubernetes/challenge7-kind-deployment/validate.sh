@@ -9,8 +9,9 @@ if ! command -v kubectl &> /dev/null; then
 fi
 
 # Check cluster connection
-if ! kubectl cluster-info &> /dev/null; then
-    echo "❌ Cannot connect to Kubernetes cluster. Is KinD running?"
+if ! kubectl cluster-info --context docker-desktop &> /dev/null; then
+    echo "❌ Cannot connect to Kubernetes cluster."
+    echo "   Make sure Docker Desktop Kubernetes is enabled and running in KinD mode."
     exit 1
 fi
 
@@ -38,9 +39,13 @@ if [ "$READY" == "2" ]; then
     if echo "$RESPONSE" | grep -q "FLAG{"; then
         echo ""
         echo "🎉 SUCCESS! App deployed and running! Your flag:"
-        echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+        FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+        echo "$FLAG"
         echo ""
         echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        curl -sf -X POST http://localhost:9000/api/complete \
+          -H "Content-Type: application/json" \
+          -d '{"challenge":"7","flag":"'"$FLAG"'","metrics":{"replicas":"'"$READY"'"}}' 2>/dev/null || true
     else
         echo "❌ App deployed but not responding correctly"
     fi
