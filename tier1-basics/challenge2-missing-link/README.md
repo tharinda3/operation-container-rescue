@@ -1,16 +1,16 @@
-# 🟢 Challenge 2: The Missing Link
+# Challenge 2: The Missing Link
 
 **Points: 10**
 
 ## Situation
 
-The container builds and starts, but the application crashes immediately. The logs show an error but the developer swears "it works on my machine!"
+The container builds and starts, but the application crashes immediately. The logs show an error but the developer swears "it works on my machine!" Your mission: figure out what the container is missing and fix it.
 
 ## Your Task
 
 1. Build and run the container
 2. Check the logs to diagnose the issue
-3. Fix the problem (hint: it's a configuration issue)
+3. Fix the problem (it is a configuration issue)
 4. Run the validation script to capture your flag
 
 ## Commands You'll Need
@@ -25,7 +25,7 @@ docker run challenge2:fixed
 # Check logs
 docker logs <container_id>
 
-# Run with your fix
+# Run with your fix applied
 docker run <your_fix_here> challenge2:fixed
 
 # Validate
@@ -46,5 +46,5 @@ Check what environment variables the app expects.
 
 <details>
 <summary>Hint 3 (spicy)</summary>
-Look at app.py — it requires DATABASE_URL to be set. Use -e flag.
+Look at app.py. It requires DATABASE_URL to be set. Use the -e flag when running the container.
 </details>

@@ -15,9 +15,13 @@ for PORT in $PORTS; do
         echo "✅ Service found on port $PORT!"
         echo ""
         echo "🎉 SUCCESS! Your flag:"
-        echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+        FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+        echo "$FLAG"
         echo ""
         echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        curl -sf -X POST http://localhost:9000/api/complete \
+          -H "Content-Type: application/json" \
+          -d '{"challenge":"8","flag":"'"$FLAG"'","metrics":{"port":"'"$PORT"'"}}' 2>/dev/null || true
         FLAG_FOUND=true
         break
     fi

@@ -14,9 +14,13 @@ if docker images | grep -q "challenge1.*fixed"; then
     if echo "$RESPONSE" | grep -q "FLAG{"; then
         echo ""
         echo "🎉 SUCCESS! Your flag:"
-        echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+        FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+        echo "$FLAG"
         echo ""
         echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        curl -sf -X POST http://localhost:9000/api/complete \
+          -H "Content-Type: application/json" \
+          -d '{"challenge":"1","flag":"'"$FLAG"'"}' 2>/dev/null || true
     else
         echo "❌ Container running but app not responding correctly"
     fi

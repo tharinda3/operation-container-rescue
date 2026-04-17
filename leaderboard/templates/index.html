@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Operation Container Rescue</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; padding: 24px; }
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { font-size: 2rem; color: #2496ed; }
+    header p { color: #8b949e; margin-top: 8px; }
+    .stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px 32px; text-align: center; min-width: 160px; }
+    .stat-card .value { font-size: 2rem; font-weight: bold; color: #2496ed; }
+    .stat-card .label { font-size: 0.85rem; color: #8b949e; margin-top: 4px; }
+    .progress-container { max-width: 800px; margin: 0 auto 32px; }
+    .progress-bar-bg { background: #21262d; border-radius: 8px; height: 12px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #2496ed, #00c853); border-radius: 8px; transition: width 0.5s ease; }
+    .progress-label { text-align: center; color: #8b949e; font-size: 0.85rem; margin-top: 8px; }
+    .tier-section { max-width: 1100px; margin: 0 auto 32px; }
+    .tier-header { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid; }
+    .tier-1 .tier-header { color: #3fb950; border-color: #3fb950; }
+    .tier-2 .tier-header { color: #d29922; border-color: #d29922; }
+    .tier-3 .tier-header { color: #2496ed; border-color: #2496ed; }
+    .challenges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .challenge-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: border-color 0.3s; }
+    .challenge-card.completed { border-color: #3fb950; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .card-title { font-weight: 600; }
+    .points { font-size: 0.8rem; color: #d29922; margin-top: 2px; }
+    .status-badge { font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+    .status-badge.done { background: #1a3a1a; color: #3fb950; border: 1px solid #3fb950; }
+    .status-badge.pending { background: #1c2128; color: #8b949e; border: 1px solid #30363d; }
+    .card-detail { font-size: 0.85rem; color: #8b949e; margin-top: 6px; }
+    .card-detail span { color: #e6edf3; }
+    .metric-tag { display: inline-block; background: #0d2d6e; color: #79c0ff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-top: 8px; margin-right: 4px; }
+    .metric-tag.bonus { background: #1a3a1a; color: #3fb950; }
+    footer { text-align: center; color: #4a5568; font-size: 0.8rem; margin-top: 32px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🐳 Operation Container Rescue</h1>
+  <p id="subtitle">Waiting for first challenge to be completed...</p>
+</header>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="value" id="elapsed-time">--:--:--</div>
+    <div class="label">Total Elapsed Time</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" id="challenges-done">0 / 8</div>
+    <div class="label">Challenges Completed</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" id="total-score">0</div>
+    <div class="label">Points Scored</div>
+  </div>
+</div>
+
+<div class="progress-container">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+  </div>
+  <div class="progress-label" id="progress-label">0 of 8 challenges complete</div>
+</div>
+
+<div id="tiers-container"></div>
+
+<footer>Auto-refreshes every 10 seconds &nbsp;|&nbsp; Good luck, First Responder! 🐳</footer>
+
+<script>
+const CHALLENGES = [
+  { id:"1", name:"The Broken Build",     tier:1, points:10 },
+  { id:"2", name:"The Missing Link",     tier:1, points:10 },
+  { id:"3", name:"The Bloated Image",    tier:1, points:10 },
+  { id:"4", name:"Network Nightmare",    tier:2, points:20 },
+  { id:"5", name:"Volume Vanishing Act", tier:2, points:20 },
+  { id:"6", name:"Health Check Hero",    tier:2, points:20 },
+  { id:"7", name:"KinD Deployment",      tier:3, points:30 },
+  { id:"8", name:"Service Exposure",     tier:3, points:30 },
+];
+const TIER_LABELS = {
+  1:"🟢 Tier 1 — Container Basics (10 pts each)",
+  2:"🟡 Tier 2 — Compose & Networking (20 pts each)",
+  3:"🔵 Tier 3 — Kubernetes & KinD (30 pts each)",
+};
+
+let startTime = null;
+let timerInterval = null;
+
+function fmt(secs) {
+  const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
+  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+function secsBetween(a,b) { return Math.floor((new Date(b)-new Date(a))/1000); }
+
+function renderCard(c, done, startIso) {
+  const completed = done !== undefined;
+  const elapsed = completed ? fmt(secsBetween(startIso, done.completed_at)) : null;
+  const m = completed ? (done.metrics||{}) : {};
+  let tags = '';
+  if (c.id==="3" && m.image_size) {
+    const n = parseFloat(m.image_size);
+    tags += `<span class="metric-tag">📦 ${m.image_size}</span>`;
+    if (n < 20) tags += `<span class="metric-tag bonus">⭐ Bonus: Under 20MB!</span>`;
+  }
+  if (c.id==="7" && m.replicas) tags += `<span class="metric-tag">⚙️ ${m.replicas}/2 replicas</span>`;
+  if (c.id==="8" && m.port) tags += `<span class="metric-tag">🔌 ${parseInt(m.port)>=30000?'NodePort':'Port Forward'}</span>`;
+
+  return `<div class="challenge-card ${completed?'completed':''}">
+    <div class="card-header">
+      <div><div class="card-title">C${c.id}: ${c.name}</div><div class="points">+${c.points} pts</div></div>
+      <span class="status-badge ${completed?'done':'pending'}">${completed?'✅ Done':'⏳ Pending'}</span>
+    </div>
+    ${completed ? `<div class="card-detail">⏱ Completed <span>${elapsed}</span> into challenge</div>` : ''}
+    ${tags ? `<div>${tags}</div>` : ''}
+  </div>`;
+}
+
+function render(data) {
+  startTime = data.start_time ? new Date(data.start_time) : null;
+  const done = data.challenges||{};
+  const doneCount = Object.keys(done).length;
+  const score = CHALLENGES.filter(c=>done[c.id]).reduce((s,c)=>s+c.points,0);
+
+  document.getElementById('challenges-done').textContent = `${doneCount} / 8`;
+  document.getElementById('total-score').textContent = score;
+  document.getElementById('progress-bar').style.width = `${(doneCount/8)*100}%`;
+  document.getElementById('progress-label').textContent = `${doneCount} of 8 challenges complete`;
+
+  if (startTime && !timerInterval) {
+    document.getElementById('subtitle').textContent = 'Challenge in progress — keep going!';
+    timerInterval = setInterval(()=>{
+      document.getElementById('elapsed-time').textContent = fmt(Math.floor((new Date()-startTime)/1000));
+    }, 1000);
+  }
+  if (doneCount===8) document.getElementById('subtitle').textContent = '🎉 All challenges complete!';
+
+  document.getElementById('tiers-container').innerHTML = [1,2,3].map(tier=>`
+    <div class="tier-section tier-${tier}">
+      <div class="tier-header">${TIER_LABELS[tier]}</div>
+      <div class="challenges-grid">
+        ${CHALLENGES.filter(c=>c.tier===tier).map(c=>renderCard(c,done[c.id],data.start_time)).join('')}
+      </div>
+    </div>`).join('');
+}
+
+async function refresh() {
+  try { render(await (await fetch('/api/status')).json()); }
+  catch(e) { console.error('Refresh failed:', e); }
+}
+refresh();
+setInterval(refresh, 10000);
+</script>
+</body>
+</html>

@@ -24,9 +24,13 @@ if docker images | grep -q "challenge3.*slim"; then
             if echo "$RESPONSE" | grep -q "FLAG{"; then
                 echo ""
                 echo "🎉 SUCCESS! Your flag:"
-                echo "$RESPONSE" | grep -o "FLAG{[^}]*}"
+                FLAG=$(echo "$RESPONSE" | grep -o "FLAG{[^}]*}")
+                echo "$FLAG"
                 echo ""
                 echo "⏱️  Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+                curl -sf -X POST http://localhost:9000/api/complete \
+                  -H "Content-Type: application/json" \
+                  -d '{"challenge":"3","flag":"'"$FLAG"'","metrics":{"image_size":"'"$SIZE"'"}}' 2>/dev/null || true
             else
                 echo "❌ Container running but app not responding"
             fi
