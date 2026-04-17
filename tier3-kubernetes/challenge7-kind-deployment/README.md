@@ -1,3 +1,16 @@
+## Prerequisites
+
+A KinD cluster must be running before starting this challenge.
+If you have not created one yet, run this from the repo root:
+
+    kind create cluster --config kind-config.yaml --name rescue-cluster
+
+Verify it is ready:
+
+    kubectl cluster-info --context kind-rescue-cluster
+
+---
+
 # 🔵 Challenge 7: KinD Deployment
 
 **Points: 30**

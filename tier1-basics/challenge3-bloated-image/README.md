@@ -44,3 +44,6 @@ Build with golang:1.21, but run with alpine or scratch.
 <summary>Hint 3 (spicy)</summary>
 Use "FROM golang:1.21 AS builder" then "FROM alpine:3.19" and COPY --from=builder
 </details>
+
+## Hint: When copying a compiled binary between build environments, think about whether it links to system libraries. Static vs dynamic linking matters.
+

@@ -47,3 +47,15 @@ Check if all services are attached to the same network. Also check the network d
 <summary>Hint 3 (spicy)</summary>
 The api service is missing the network attachment. Also, service names in URLs must match the compose service names exactly.
 </details>
+
+## Network Requirements
+
+Your fixed configuration must satisfy all of the following:
+- The web service must be able to reach the api service
+- The api service must be able to reach the database service
+- The database service should NOT be directly reachable from the web service
+- Service names in connection strings must match the Compose service names exactly
+
+There are multiple valid ways to achieve this. Think about which services need
+to talk to each other and design your networks accordingly.
+

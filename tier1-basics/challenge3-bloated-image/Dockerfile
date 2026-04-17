@@ -1,5 +1,5 @@
 # This image is way too big! Optimize me with multi-stage builds
-FROM golang:1.21
+FROM golang:1.21.0
 
 WORKDIR /app
 
