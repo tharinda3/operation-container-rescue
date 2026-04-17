@@ -36,6 +36,8 @@
     .metric-tag { display: inline-block; background: #0d2d6e; color: #79c0ff; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-top: 8px; margin-right: 4px; }
     .metric-tag.bonus { background: #1a3a1a; color: #3fb950; }
     footer { text-align: center; color: #4a5568; font-size: 0.8rem; margin-top: 32px; }
+    .reset-btn { background: none; border: 1px solid #30363d; color: #4a5568; font-size: 0.75rem; padding: 4px 12px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
+    .reset-btn:hover { border-color: #f85149; color: #f85149; }
   </style>
 </head>
 <body>
@@ -69,7 +71,11 @@
 
 <div id="tiers-container"></div>
 
-<footer>Auto-refreshes every 10 seconds &nbsp;|&nbsp; Good luck, First Responder! 🐳</footer>
+<footer>
+  Auto-refreshes every 10 seconds &nbsp;|&nbsp; Good luck, First Responder! 🐳
+  <br>
+  <button class="reset-btn" onclick="resetProgress()">Reset Progress</button>
+</footer>
 
 <script>
 const CHALLENGES = [
@@ -152,6 +158,19 @@ async function refresh() {
   try { render(await (await fetch('/api/status')).json()); }
   catch(e) { console.error('Refresh failed:', e); }
 }
+async function resetProgress() {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  try {
+    await fetch('/api/reset', { method: 'POST' });
+    timerInterval && clearInterval(timerInterval);
+    timerInterval = null;
+    startTime = null;
+    document.getElementById('elapsed-time').textContent = '--:--:--';
+    document.getElementById('subtitle').textContent = 'Waiting for first challenge to be completed...';
+    await refresh();
+  } catch(e) { console.error('Reset failed:', e); }
+}
+
 refresh();
 setInterval(refresh, 10000);
 </script>

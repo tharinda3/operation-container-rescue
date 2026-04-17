@@ -25,6 +25,11 @@ def index():
 def status():
     return jsonify(load_data())
 
+@app.route('/api/reset', methods=['POST'])
+def reset():
+    save_data({"start_time": None, "challenges": {}})
+    return jsonify({"status": "reset"})
+
 @app.route('/api/complete', methods=['POST'])
 def complete():
     body = request.get_json()
